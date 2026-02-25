@@ -1,101 +1,102 @@
 # plentzia-piraguismo-platform
-## 🧭 Contexto
 
-El Club de Piragüismo de Plentzia no dispone actualmente de una plataforma digital funcional.  
-La presencia online se limita a un blog desactualizado y los procesos administrativos (inscripciones, comunicación y publicación de información) se gestionan de forma manual.
+## 🧭 Context
 
-Existe además una rotación natural de responsables dentro de la asociación, lo que exige una solución:
+The Plentzia Canoe Club currently lacks a functional digital platform.  
+Its online presence is limited to an outdated blog, and administrative processes (registrations, communication, content publishing) are managed manually.
 
-- Sencilla de usar  
-- Sostenible en el tiempo  
-- Sin dependencia técnica constante  
-- De bajo coste operativo  
+Due to the natural rotation of responsibilities within the association, the solution must be:
 
----
-
-## 🎯 Objetivo del Proyecto
-
-Diseñar e implementar una plataforma digital progresiva para la asociación, basada en arquitectura **serverless** y estructurada por fases, que permita:
-
-- Presencia online estable y actualizable  
-- Publicación sencilla de contenido por parte de usuarios no técnicos  
-- Reducción de procesos manuales  
-- Escalabilidad futura sin rediseños estructurales  
+- Simple to use  
+- Sustainable over time  
+- Independent from continuous technical maintenance  
+- Cost-efficient  
 
 ---
 
-## 🗺️ Roadmap por Fases
+## 🎯 Project Objective
 
-### 🔹 Fase 1 – Presencia Digital y Gestión de Contenido
+Design and implement a progressive digital platform for the association, based on a **serverless-first architecture**, structured in phases, enabling:
 
-**Alcance:**
+- A stable and updatable online presence  
+- Content management by non-technical users  
+- Reduction of manual processes  
+- Future scalability without structural redesign  
 
-- Web pública con las siguientes secciones:
+---
+
+## 🗺️ Roadmap
+
+### 🔹 Phase 1 – Digital Presence & Content Management
+
+Scope:
+
+- Public website with the following sections:
   - Home  
   - Club  
-  - Cursillos  
-  - Nuevos Miembros  
-  - Noticias  
-- Publicación y edición de contenido mediante panel administrativo  
-- Noticias con estructura principal + histórico lateral  
-- Formulario público de inscripción que genera notificación por email  
-- Autenticación mediante Amazon Cognito (usuarios editores)  
-- Arquitectura serverless sin servidores persistentes  
+  - Courses  
+  - New Members  
+  - News  
+- Administrative panel for content editing  
+- News system with main article + historical sidebar  
+- Public registration form triggering email notification  
+- Authentication via Amazon Cognito (content editors)  
+- Fully serverless architecture  
 
 ---
 
-### 🔹 Fase 2 – Gestión Interna y Automatización *(No incluida en Fase 1)*
+### 🔹 Phase 2 – Internal Management & Automation *(Out of Scope for Phase 1)*
 
-- Usuarios socios  
-- Área privada  
-- Gestión básica de socios  
-- Automatizaciones de comunicación  
-- Evolución de estructura de contenidos  
-
----
-
-### 🔹 Fase 3 – Escalado y Transacciones *(Visión futura)*
-
-- Pagos online  
-- Reservas  
-- Mayor control de acceso  
-- Funcionalidades avanzadas  
+- Member accounts  
+- Private area  
+- Basic member management  
+- Communication automation  
+- Extended content structure  
 
 ---
 
-## 🏗️ Arquitectura Fase 1
+### 🔹 Phase 3 – Scaling & Transactions *(Future Vision)*
 
-Arquitectura serverless basada en AWS:
-
-- Frontend público (Astro) desplegado en S3 + CloudFront  
-- Panel administrativo independiente (subdominio)  
-- API REST mediante API Gateway + AWS Lambda (Node + TypeScript)  
-- Base de datos DynamoDB (tablas `Pages` y `News`)  
-- Almacenamiento de imágenes en S3 privado servido por CloudFront  
-- Autenticación mediante Amazon Cognito Hosted UI  
-- Envío de emails mediante Amazon SES  
-
-### Principios clave
-
-- Infraestructura como código (Terraform)  
-- Separación entre web pública y panel administrativo  
-- Seguridad por defecto (S3 privado, acceso mediante OAC)  
-- Arquitectura preparada para evolución futura  
+- Online payments  
+- Reservations  
+- Advanced access control  
+- Extended platform capabilities  
 
 ---
 
-## 🧱 Principios de Diseño
+## 🏗️ Phase 1 Architecture
+
+Serverless architecture built on AWS:
+
+- Public frontend (Astro) deployed on S3 + CloudFront  
+- Independent admin panel (separate subdomain)  
+- REST API via API Gateway + AWS Lambda (Node.js + TypeScript)  
+- DynamoDB tables (`Pages` and `News`)  
+- Private S3 bucket for media served via CloudFront  
+- Authentication via Amazon Cognito Hosted UI  
+- Email notifications via Amazon SES  
+
+### Key Architectural Principles
+
+- Infrastructure as Code (Terraform)  
+- Clear separation between public site and admin panel  
+- Security by default (private S3 + OAC)  
+- Designed for incremental evolution  
+
+---
+
+## 🧱 Design Principles
 
 - Serverless-first  
 - Low maintenance  
 - Cost-aware architecture  
-- Simplicidad funcional  
-- Evolución incremental por fases  
-- Separación clara entre capas (Frontend / Backend / Infra)  
+- Functional simplicity  
+- Incremental delivery by phases  
+- Clear separation of concerns (Frontend / Backend / Infrastructure)  
 
 ---
 
-## 📂 Estructura del Repositorio
+## 📂 Repository Structure
 
 ```
 plentzia-piraguismo-platform/
@@ -113,6 +114,7 @@ plentzia-piraguismo-platform/
 └── README.md
 ```
 
-## 📌 Estado Actual
+## 📌 Current Status
 
-Proyecto en desarrollo – Fase 1.
+Phase 1 – In Progress.
+
