@@ -1,0 +1,15 @@
+{
+  "name": "plentzia-piraguismo-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Serverless-first digital platform for a sports association",
+  "workspaces": [
+    "apps/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "echo Use workspace-specific dev scripts",
+    "build": "echo Use workspace-specific build scripts",
+    "lint": "echo Use workspace-specific lint scripts"
+  }
+}
