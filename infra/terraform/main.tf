@@ -24,6 +24,15 @@ resource "aws_s3_bucket" "media" {
   }
 }
 
+resource "aws_s3_bucket" "admin_web" {
+  bucket = "${local.project}-admin-web"
+
+  tags = {
+    Project     = local.project
+    Environment = local.environment
+  }
+}
+
 resource "aws_dynamodb_table" "pages" {
   name         = "${local.project}-pages"
   billing_mode = "PAY_PER_REQUEST"
@@ -94,3 +103,43 @@ resource "aws_lambda_function" "api" {
     Environment = local.environment
   }
 }
+
+resource "aws_lambda_permission" "api_gateway" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+resource "aws_apigatewayv2_api" "http_api" {
+  name          = "${local.project}-api"
+  protocol_type = "HTTP"
+}
+
+
+resource "aws_apigatewayv2_integration" "lambda" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  integration_type = "AWS_PROXY"
+
+  integration_uri  = aws_lambda_function.api.invoke_arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_route" "health" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /health"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+output "api_endpoint" {
+  value = aws_apigatewayv2_api.http_api.api_endpoint
+}
+
