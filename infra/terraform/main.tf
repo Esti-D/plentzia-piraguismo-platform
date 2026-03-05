@@ -55,3 +55,42 @@ resource "aws_dynamodb_table" "news" {
     Environment = local.environment
   }
 }
+
+resource "aws_iam_role" "lambda_role" {
+  name = "${local.project}-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_function" "api" {
+  function_name = "${local.project}-api"
+
+  filename      = "../lambda/api.zip"
+  handler       = "health.handler"
+  runtime       = "nodejs18.x"
+
+  role = aws_iam_role.lambda_role.arn
+
+  source_code_hash = filebase64sha256("../lambda/api.zip")
+
+  tags = {
+    Project     = local.project
+    Environment = local.environment
+  }
+}
