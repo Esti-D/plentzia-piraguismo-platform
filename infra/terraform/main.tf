@@ -49,6 +49,94 @@ resource "aws_dynamodb_table" "pages" {
   }
 }
 
+resource "aws_cloudfront_distribution" "public_web" {
+  enabled = true
+
+  origin {
+    domain_name = aws_s3_bucket.public_web.bucket_regional_domain_name
+    origin_id   = "public-web-s3"
+
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
+  default_cache_behavior {
+    target_origin_id       = "public-web-s3"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Project     = local.project
+    Environment = local.environment
+  }
+}
+
+resource "aws_cloudfront_distribution" "admin_web" {
+  enabled = true
+
+  origin {
+    domain_name = aws_s3_bucket.admin_web.bucket_regional_domain_name
+    origin_id   = "admin-web-s3"
+
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
+  default_cache_behavior {
+    target_origin_id       = "admin-web-s3"
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Project     = local.project
+    Environment = local.environment
+  }
+}
+
 resource "aws_dynamodb_table" "news" {
   name         = "${local.project}-news"
   billing_mode = "PAY_PER_REQUEST"
