@@ -227,7 +227,72 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 }
 
+resource "aws_cognito_user_pool" "admin_users" {
+  name = "${local.project}-admins"
+
+  auto_verified_attributes = ["email"]
+
+  password_policy {
+    minimum_length = 8
+  }
+
+  tags = {
+    Project     = local.project
+    Environment = local.environment
+  }
+}
+
+resource "aws_cognito_user_pool_client" "admin_client" {
+  name         = "${local.project}-admin-client"
+  user_pool_id = aws_cognito_user_pool.admin_users.id
+
+  generate_secret = false
+
+  explicit_auth_flows = [
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
+
+  prevent_user_existence_errors = "ENABLED"
+}
+
+resource "aws_cognito_user_pool_domain" "admin_domain" {
+  domain       = "${local.project}-auth"
+  user_pool_id = aws_cognito_user_pool.admin_users.id
+}
+
+resource "aws_apigatewayv2_authorizer" "cognito" {
+  name             = "${local.project}-authorizer"
+  api_id           = aws_apigatewayv2_api.http_api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+
+  jwt_configuration {
+    audience = [aws_cognito_user_pool_client.admin_client.id]
+    issuer   = "https://cognito-idp.eu-west-1.amazonaws.com/${aws_cognito_user_pool.admin_users.id}"
+  }
+}
+
+resource "aws_apigatewayv2_route" "admin_test" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /admin"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
+}
+
+
 output "api_endpoint" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
+}
+
+output "cloudfront_public_url" {
+  value = aws_cloudfront_distribution.public_web.domain_name
+}
+
+output "cloudfront_admin_url" {
+  value = aws_cloudfront_distribution.admin_web.domain_name
 }
 
