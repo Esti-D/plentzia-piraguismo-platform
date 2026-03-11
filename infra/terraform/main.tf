@@ -254,6 +254,16 @@ resource "aws_cognito_user_pool_client" "admin_client" {
   ]
 
   prevent_user_existence_errors = "ENABLED"
+
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows                  = ["implicit"]
+  allowed_oauth_scopes                 = ["email", "openid"]
+
+  callback_urls = [
+    "http://localhost"
+  ]
+
+  supported_identity_providers = ["COGNITO"]
 }
 
 resource "aws_cognito_user_pool_domain" "admin_domain" {
@@ -271,6 +281,18 @@ resource "aws_apigatewayv2_authorizer" "cognito" {
     audience = [aws_cognito_user_pool_client.admin_client.id]
     issuer   = "https://cognito-idp.eu-west-1.amazonaws.com/${aws_cognito_user_pool.admin_users.id}"
   }
+}
+
+resource "aws_cognito_user" "admin_user" {
+  user_pool_id = aws_cognito_user_pool.admin_users.id
+  username     = "admin"
+
+  attributes = {
+    email          = "admin@club.com"
+    email_verified = "true"
+  }
+
+  temporary_password = "TempPassword123!"
 }
 
 resource "aws_apigatewayv2_route" "admin_test" {
